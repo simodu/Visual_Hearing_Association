@@ -1,0 +1,181 @@
+---
+title: "EyeDOC"
+author: "Simo"
+date: "January 31, 2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F)
+library(ggplot2)
+library(haven)
+library(ggcorrplot)
+library(tidyr)
+library(dplyr)
+ 
+library(knitr)
+visual_hearing <- read_dta("C:/Users/sdu7/Box Sync/Edoc/data/03_visual_hearing_long.dta")
+
+```
+# part 1 variable distribution 
+
+```{r}
+ 
+qplot(evs29a, data = visual_hearing ,fill = factor(bptacat3) )
+qplot(evs29b, data = visual_hearing ,fill = factor(bptacat3)  )
+qplot(evs29a, data = visual_hearing ,fill = gender )
+qplot(evs29b, data = visual_hearing ,fill = gender  )
+
+```
+ 
+# Part 2 Scatter plot 
+
+##1  BPTA
+
+###1.1.1 BPTA  & contrast sensitivity 
+```{r}
+ggplot(visual_hearing, aes(x = bpta, y = evs_cs)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="bpta", y="visual contrast")
+```
+
+###1.1.2
+```{r}
+ggplot(visual_hearing, aes(x = evs_cs, y = bpta)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="visual contrast", y="bpta")
+```
+
+
+
+
+### 1.2  BPTA & Visual Acuity 
+
+```{r}
+ggplot(visual_hearing, aes(x = bpta, y = evs_va)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="bpta", y="visual acuity")
+```
+
+```{r}
+ggplot(visual_hearing, aes(x = evs_va, y = bpta)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="visual acuity", y="bpta")
+```
+
+ 
+## 1.2  BPTA & Visual dis
+
+```{r}
+ggplot(visual_hearing, aes(x = bpta, y = evs_va)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="bpta", y="visual acuity")
+```
+
+```{r}
+ggplot(visual_hearing, aes(x = evs_va, y = bpta)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="visual acuity", y="bpta")
+```
+
+ 
+
+## 2 SNR 
+
+### 2.1 Signal to noise ratio and Visual contrast sensitivity 
+```{r}
+ggplot(visual_hearing, aes(x = SNRloss, y = bvc)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="Speech in noise", y="visual contrast")
+```
+
+### 2.2 Signal to noise ratio and Visual acuity 
+
+```{r}
+ggplot(visual_hearing, aes(x = SNRloss, y = bva)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="Speech in noise", y="visual acuity")
+```
+
+## OCT 
+
+
+### PTA 
+```{r}
+hist( visual_hearing$nflthicknessoverall)
+
+ggplot(visual_hearing, aes(x = bpta, y = nflthicknessoverall)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="BPTA", y="NFL")
+
+hist( visual_hearing$x3macoverallgccthickness)
+
+
+ggplot(visual_hearing, aes(x = bpta, y = x3macoverallgccthickness)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="BPTA", y="GGC")
+
+```
+
+
+ 
+### Speech in noise 
+```{r}
+hist( visual_hearing$nflthicknessoverall)
+
+ggplot(visual_hearing, aes(x = SNRloss, y = nflthicknessoverall)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="Speech in noise", y="NFL")
+
+hist( visual_hearing$x3macoverallgccthickness)
+
+
+ggplot(visual_hearing, aes(x = SNRloss, y = x3macoverallgccthickness)) +
+    geom_jitter(aes(colour = gender), alpha = 0.7) +
+    geom_smooth() +
+    labs(title="Scatter plot", x="Speech in noise", y="GGC")
+
+```
+
+
+
+
+
+
+
+```{r}
+ 
+# Correlation matrix
+ vh_corr <- select(visual_hearing ,SNRloss, bpta ,bvc,bva    ) 
+corr <- round(cor(vh_corr,use = "complete") ,3  )
+ 
+# Plot
+  ggcorrplot(corr,  
+  type = "lower",
+           lab = TRUE, 
+           lab_size = 3, 
+method="circle", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="Correlogram of visaul and hearing functions", 
+           ggtheme=theme_bw )
+print(cor)  
+
+```
+
+
+
+
